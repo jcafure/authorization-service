@@ -1,0 +1,46 @@
+services:
+  authorization:
+    image: 'caridade-authorization-app:latest'
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    container_name: 'authorization-service'
+    depends_on:
+      auth-postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: auth-postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: admin
+      DB_NAME: authorizationdb
+    ports:
+      - "9092:9091"
+    networks:
+      - auth-network
+
+  auth-postgres:
+    image: postgres
+    container_name: auth-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: authorizationdb
+    ports:
+      - "5435:5432"
+    volumes:
+      - auth-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    networks:
+      - auth-network
+
+networks:
+  auth-network:
+
+volumes:
+  auth-postgres-data:
