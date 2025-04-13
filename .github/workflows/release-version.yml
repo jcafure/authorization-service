@@ -1,0 +1,68 @@
+name: Release Version Update
+
+on:
+  workflow_dispatch:
+    inputs:
+      tipoVersao:
+        description: 'Tipo de versão (patch, minor, major)'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: 22
+          distribution: 'zulu'
+
+      - name: Ler versão atual do pom.xml
+        id: version
+        run: |
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          CLEAN_VERSION=$(echo "$VERSION" | sed 's/-SNAPSHOT//')
+          echo "current_version=$CLEAN_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Calcular próxima versão
+        id: next
+        run: |
+          CURRENT="${{ steps.version.outputs.current_version }}"
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
+
+          case "${{ github.event.inputs.tipoVersao }}" in
+            major)
+              MAJOR=$((MAJOR + 1))
+              MINOR=0
+              PATCH=0
+              ;;
+            minor)
+              MINOR=$((MINOR + 1))
+              PATCH=0
+              ;;
+            patch)
+              PATCH=$((PATCH + 1))
+              ;;
+          esac
+
+          NEXT_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+          echo "next_version=$NEXT_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Criar e publicar release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.next.outputs.next_version }}
+          name: Versão ${{ steps.next.outputs.next_version }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
