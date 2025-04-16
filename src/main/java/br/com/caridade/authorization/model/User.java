@@ -1,18 +1,17 @@
 package br.com.caridade.authorization.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDate;
-@EqualsAndHashCode(callSuper = true)
-@Data
-@AllArgsConstructor
+import java.util.HashSet;
+import java.util.Set;
+
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "users")
 public class User extends BaseEntity{
@@ -26,4 +25,8 @@ public class User extends BaseEntity{
     private LocalDate createdAt;
     private LocalDate updateAt;
     private boolean active;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "user_id")
+    private Set<UserRoleGroup> rolesByGroup = new HashSet<>();
 }
