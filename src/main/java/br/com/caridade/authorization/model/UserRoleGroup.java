@@ -1,30 +1,28 @@
 package br.com.caridade.authorization.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
-@EqualsAndHashCode(callSuper = true)
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
-@Data
+@AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "user_role_group")
 public class UserRoleGroup extends BaseEntity{
 
-    @ManyToOne(optional = false)
+    @EqualsAndHashCode.Include
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
+    @EqualsAndHashCode.Include
     @ManyToOne(optional = false)
     @JoinColumn(name = "group_id")
     private Group group;
 
+    @EqualsAndHashCode.Include
     @ManyToOne(optional = false)
     @JoinColumn(name = "role_id")
     private Role role;
