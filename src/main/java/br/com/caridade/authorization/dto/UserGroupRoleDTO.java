@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class UserGroupRoleDTO {
+    private Integer id;
     private String groupName;
     private String roleName;
 }
