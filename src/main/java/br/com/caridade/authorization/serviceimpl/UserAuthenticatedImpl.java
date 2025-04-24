@@ -72,5 +72,4 @@ public class UserAuthenticatedImpl implements UserDetails {
                 ))
                 .toList();
     }
-
 }
