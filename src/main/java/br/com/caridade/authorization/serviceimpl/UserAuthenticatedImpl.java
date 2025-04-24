@@ -49,7 +49,7 @@ public class UserAuthenticatedImpl implements UserDetails {
 
     public List<String> getRoles() {
         return user.getRolesByGroup().stream()
-                .map(roleGroup -> roleGroup.getRole().getName()) // exemplo: "DONOR", "ADMIN"
+                .map(roleGroup -> roleGroup.getRole().getName())
                 .distinct()
                 .toList();
     }
