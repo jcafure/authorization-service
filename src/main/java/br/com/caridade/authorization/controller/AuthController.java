@@ -31,6 +31,6 @@ public class AuthController {
         );
 
         String token = authenticationService.authenticated(authRequest);
-        return ResponseEntity.ok("Bearer " + token);
+        return ResponseEntity.ok(token);
     }
 }

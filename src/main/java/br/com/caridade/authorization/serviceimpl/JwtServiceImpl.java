@@ -32,19 +32,27 @@ public class JwtServiceImpl implements JwtService {
 
     private static JwtClaimsSet buildClaims(Authentication authentication, Instant now,
                                             long expiry, String scopes) {
+
+        UserAuthenticatedImpl  user = (UserAuthenticatedImpl) authentication.getPrincipal();
+
         return JwtClaimsSet.builder()
                 .issuer("auth-service")
                 .expiresAt(now)
                 .expiresAt(now.plusSeconds(expiry))
                 .subject(authentication.getName())
                 .claim("scope", scopes)
-                .build();
+                .claims(claims -> {
+                    claims.put("internalId", user.getId());
+                    claims.put("roles", user.getRoles());
+                    claims.put("permissions", user.getPermissions());
+                    claims.put("userGroupRoleDTOS", user.getUserGroupRoleDTOS());
+                }).build();
     }
 
     private static String buildScopes(Authentication authentication) {
         return authentication.getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(""));
+                .collect(Collectors.joining(" "));
     }
 }
