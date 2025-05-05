@@ -12,3 +12,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
+
+jwt:
+  private-key: classpath:keys/private.key
+  public-key: classpath:keys/public.key

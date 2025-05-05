@@ -50,8 +50,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/.well-known/jwks.json").permitAll()
                         .anyRequest().authenticated())
-                .httpBasic(Customizer.withDefaults());
+                .httpBasic(Customizer.withDefaults())
+                .oauth2ResourceServer( oauth -> oauth.jwt(Customizer.withDefaults()));
         return http.build();
     }
 
